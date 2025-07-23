@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiLogIn, FiChevronLeft, FiChevronRight, FiUser, FiSettings, FiBarChart2, FiAward, FiBell } from 'react-icons/fi';
+import { FiLogIn, FiChevronLeft, FiChevronRight, FiUser, FiSettings, FiBarChart2, FiAward, FiBell, FiArrowUp, FiArrowDown } from 'react-icons/fi';
 import { SparklesIcon } from "@heroicons/react/24/outline";
-
 
 import { Line } from 'react-chartjs-2';
 import {
@@ -114,6 +113,56 @@ const mockDashboardData: DashboardData = {
       license_number: "PH901234",
       number_sells: 721,
       number_buys: 498
+    },
+    {
+      id: 6,
+      name: "Sunshine Pharmacy",
+      city: "Luxor",
+      latitude: "25.6872",
+      longitude: "32.6396",
+      license_number: "PH567890",
+      number_sells: 1100,
+      number_buys: 750
+    },
+    {
+      id: 7,
+      name: "Green Pharmacy",
+      city: "Aswan",
+      latitude: "24.0889",
+      longitude: "32.8998",
+      license_number: "PH678901",
+      number_sells: 920,
+      number_buys: 680
+    },
+    {
+      id: 8,
+      name: "Blue Pharmacy",
+      city: "Alexandria",
+      latitude: "31.2005",
+      longitude: "29.9189",
+      license_number: "PH789123",
+      number_sells: 1350,
+      number_buys: 890
+    },
+    {
+      id: 9,
+      name: "Red Pharmacy",
+      city: "Giza",
+      latitude: "29.9875",
+      longitude: "31.2120",
+      license_number: "PH891234",
+      number_sells: 1050,
+      number_buys: 720
+    },
+    {
+      id: 10,
+      name: "Gold Pharmacy",
+      city: "Cairo",
+      latitude: "30.0448",
+      longitude: "31.2360",
+      license_number: "PH912345",
+      number_sells: 1500,
+      number_buys: 950
     }
   ]
 };
@@ -143,6 +192,18 @@ function Dashboard() {
       : dashboardData.owner?.email || ''
   );
   const [userInitials, setUserInitials] = useState<string>('');
+
+  // Sorting and pagination state
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Pharmacy; direction: 'ascending' | 'descending' } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // Update mock data with additional pharmacies if needed
+  useEffect(() => {
+    if (dashboardData.pharmacies.length < 10) {
+      dispatch({ type: 'dashboard/setPharmacies', payload: mockDashboardData.pharmacies });
+    }
+  }, [dashboardData.pharmacies.length, dispatch]);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -175,6 +236,51 @@ function Dashboard() {
     router.push('/home');
   };
 
+  // Sorting function
+  const requestSort = (key: keyof Pharmacy) => {
+    let direction: 'ascending' | 'descending' = 'ascending';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
+  // Get sorted items
+  const getSortedItems = () => {
+    if (!sortConfig) return pharmacies;
+
+    return [...pharmacies].sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === 'ascending' ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
+  // Filter and sort pharmacies
+  const filteredPharmacies = getSortedItems().filter(pharmacy =>
+    !searchTerm ||
+    pharmacy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    pharmacy.city.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredPharmacies.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredPharmacies.length / itemsPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  const getSortIndicator = (key: keyof Pharmacy) => {
+    if (!sortConfig || sortConfig.key !== key) return null;
+    return sortConfig.direction === 'ascending' ? <FiArrowUp className="ml-1" /> : <FiArrowDown className="ml-1" />;
+  };
+
   if (!dashboardData || !dashboardData.owner) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -194,7 +300,7 @@ function Dashboard() {
             {userInitials}
           </div>
           <button
-            onClick={() => router.push('/pharmacy-login')}
+            onClick={() => router.push('/home')}
             className="w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl shadow-md border-2 border-indigo-400 hover:bg-indigo-700 transition-colors"
             title="Pharmacy Login"
           >
