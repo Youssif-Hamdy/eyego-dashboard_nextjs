@@ -347,7 +347,6 @@ function Dashboard() {
         >
           {sidebarCollapsed ? <FiChevronRight size={22} /> : <FiChevronLeft size={22} />}
         </button>
-        {/* زر إغلاق السايدبار - يظهر فقط في الوضع المحمول */}
         <button
           className="text-indigo-200 hover:text-white transition-all lg:hidden"
           onClick={() => setMobileSidebarOpen(false)}
@@ -372,7 +371,6 @@ function Dashboard() {
         >
           {sidebarCollapsed ? <FiChevronRight size={22} /> : <FiChevronLeft size={22} />}
         </button>
-        {/* زر إغلاق السايدبار - يظهر فقط في الوضع المحمول */}
         <button
           className="text-indigo-200 hover:text-white transition-all lg:hidden"
           onClick={() => setMobileSidebarOpen(false)}
