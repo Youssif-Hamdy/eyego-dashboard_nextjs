@@ -310,56 +310,82 @@ function Dashboard() {
       )}
 
       <div className={`mx-auto flex min-h-screen w-full min-w-[320px] flex-col bg-white ${sidebarCollapsed ? 'lg:ps-20' : 'lg:ps-64'}`}>
-        <nav
-          className={`fixed start-0 top-0 bottom-0 z-50 flex h-full ${sidebarCollapsed ? 'w-20' : 'w-80'} flex-col overflow-auto bg-gradient-to-b from-indigo-700 to-indigo-900 transition-all duration-500 ease-out lg:${sidebarCollapsed ? 'w-20' : 'w-64'} lg:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
-          aria-label="Main Sidebar Navigation"
+       <nav
+  className={`fixed start-0 top-0 bottom-0 z-50 flex h-full ${sidebarCollapsed ? 'w-20' : 'w-80'} flex-col overflow-auto bg-gradient-to-b from-indigo-700 to-indigo-900 transition-all duration-500 ease-out lg:${sidebarCollapsed ? 'w-20' : 'w-64'} lg:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+  aria-label="Main Sidebar Navigation"
+>
+  {!sidebarCollapsed && (
+    <div className="w-full flex-none h-20 flex items-center justify-between px-2 transition-all duration-300">
+      <div className="flex items-center gap-3 w-full">
+        <div className="relative group cursor-pointer" onClick={handleAvatarClick} title=" change">
+          {avatar ? (
+            <img src={avatar} alt="User Avatar" className="h-12 w-12 rounded-full border-2 border-indigo-300 shadow object-cover" />
+          ) : (
+            <div className="h-12 w-12 rounded-full bg-indigo-300 flex items-center justify-center text-white text-2xl">
+              <FiUser />
+            </div>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            ref={avatarInputRef}
+            style={{ display: 'none' }}
+            onChange={handleAvatarChange}
+          />
+          <span className="absolute bottom-0 right-0 bg-indigo-600 text-white rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity">change</span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-white font-bold text-base truncate">{userEmail.split('@')[0]}</span>
+          <span className="text-indigo-200 text-xs truncate">{userEmail}</span>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          className="text-indigo-200 hover:text-white transition-all"
+          onClick={() => setSidebarCollapsed((prev) => !prev)}
+          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {!sidebarCollapsed && (
-            <div className="w-full flex-none h-20 flex items-center justify-between px-2 transition-all duration-300">
-              <div className="flex items-center gap-3 w-full">
-                <div className="relative group cursor-pointer" onClick={handleAvatarClick} title=" change">
-                  {avatar ? (
-                    <img src={avatar} alt="User Avatar" className="h-12 w-12 rounded-full border-2 border-indigo-300 shadow object-cover" />
-                  ) : (
-                    <div className="h-12 w-12 rounded-full bg-indigo-300 flex items-center justify-center text-white text-2xl">
-                      <FiUser />
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={avatarInputRef}
-                    style={{ display: 'none' }}
-                    onChange={handleAvatarChange}
-                  />
-                  <span className="absolute bottom-0 right-0 bg-indigo-600 text-white rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity">change</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-white font-bold text-base truncate">{userEmail.split('@')[0]}</span>
-                  <span className="text-indigo-200 text-xs truncate">{userEmail}</span>
-                </div>
-              </div>
-              <button
-                className="text-indigo-200 hover:text-white transition-all ml-auto"
-                onClick={() => setSidebarCollapsed((prev) => !prev)}
-                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              >
-                {sidebarCollapsed ? <FiChevronRight size={22} /> : <FiChevronLeft size={22} />}
-              </button>
-            </div>
-          )}
+          {sidebarCollapsed ? <FiChevronRight size={22} /> : <FiChevronLeft size={22} />}
+        </button>
+        {/* زر إغلاق السايدبار - يظهر فقط في الوضع المحمول */}
+        <button
+          className="text-indigo-200 hover:text-white transition-all lg:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+          title="Close sidebar"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  )}
 
-          {sidebarCollapsed && (
-            <div className="w-full flex-none h-12 flex items-center justify-center px-0 transition-all duration-300">
-              <button
-                className="text-indigo-200 hover:text-white transition-all"
-                onClick={() => setSidebarCollapsed((prev) => !prev)}
-                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              >
-                {sidebarCollapsed ? <FiChevronRight size={22} /> : <FiChevronLeft size={22} />}
-              </button>
-            </div>
-          )}
+  {sidebarCollapsed && (
+    <div className="w-full flex-none h-12 flex items-center justify-center px-0 transition-all duration-300">
+      <div className="flex items-center gap-2">
+        <button
+          className="text-indigo-200 hover:text-white transition-all"
+          onClick={() => setSidebarCollapsed((prev) => !prev)}
+          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {sidebarCollapsed ? <FiChevronRight size={22} /> : <FiChevronLeft size={22} />}
+        </button>
+        {/* زر إغلاق السايدبار - يظهر فقط في الوضع المحمول */}
+        <button
+          className="text-indigo-200 hover:text-white transition-all lg:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+          title="Close sidebar"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  )}
 
           <div className="w-full grow space-y-2 p-2 flex flex-col">
             <button
